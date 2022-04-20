@@ -1,0 +1,26 @@
+name: Pull request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  e2e-cypress:
+    name: E2E Cypress
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for Vercel Preview
+        uses: patrickedqvist/wait-for-vercel-preview@v1.2.0
+        id: waitForVercelPreview
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 60
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run Cypress Tests
+        uses: cypress-io/github-action@v2
+        env:
+          CYPRESS_BASE_URL: ${{ steps.waitForVercelPreview.outputs.url }}
